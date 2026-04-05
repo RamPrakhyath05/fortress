@@ -56,6 +56,7 @@ Storage Layer (In-memory / Database)
 com.fortress
 ├── controller
 │   ├── UserController.java
+│   ├── UserRequest.java
 │   └── TransactionController.java
 │
 ├── service

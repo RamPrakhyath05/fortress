@@ -20,6 +20,10 @@ public class UserService {
         this.hasher = hasher;
     }
 
+    public User getUserDetails(String userID){
+        return userRepository.findById(userID);
+    }
+
     public void addUser(String userName, String userPassword, Role role) {
 
         String userID = String.valueOf(idCounter++);
