@@ -1,0 +1,37 @@
+# Maven
+target/
+
+# Logs
+*.log
+
+# Java
+*.class
+
+# OS
+.DS_Store
+
+# Spring
+HELP.md
+
+# IDE
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# Keep wrapper JAR
+!/.mvn/wrapper/maven-wrapper.jar
