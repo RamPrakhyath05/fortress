@@ -1,8 +1,6 @@
 # Fortress
+
 A Finance Data Processing and Access Control Backend Application
-
-
-# 🏰 Fortress — Finance Data Processing & Access Control Backend
 
 ## 🚀 Overview
 
@@ -12,11 +10,11 @@ The system simulates a real-world **finance dashboard backend**, where multiple 
 
 This project focuses on:
 
-* Clean backend architecture
-* API design using REST principles
-* Role-based access control
-* Data processing and aggregation logic
-* Maintainable and scalable system design
+- Clean backend architecture
+- API design using REST principles
+- Role-based access control
+- Data processing and aggregation logic
+- Maintainable and scalable system design
 
 ---
 
@@ -24,11 +22,11 @@ This project focuses on:
 
 To design and implement a backend system that demonstrates:
 
-* Strong data modeling
-* Clear separation of concerns
-* Well-structured APIs
-* Business logic implementation
-* Role-based access control
+- Strong data modeling
+- Clear separation of concerns
+- Well-structured APIs
+- Business logic implementation
+- Role-based access control
 
 This aligns with the assignment’s goal of evaluating backend engineering thinking, not just functionality.
 
@@ -85,17 +83,17 @@ com.fortress
 
 ### Features:
 
-* Create and manage users
-* Secure password storage using hashing
-* Assign roles to users
-* Enable/disable users
-* Authenticate users
+- Create and manage users
+- Secure password storage using hashing
+- Assign roles to users
+- Enable/disable users
+- Authenticate users
 
 ### Roles:
 
-* **Admin** → Full system access (manage users & records)
-* **Analyst** → View records and analytics
-* **Viewer** → Read-only access
+- **Admin** → Full system access (manage users & records)
+- **Analyst** → View records and analytics
+- **Viewer** → Read-only access
 
 ---
 
@@ -103,23 +101,22 @@ com.fortress
 
 Each transaction includes:
 
-* Amount
-* Type (Income / Expense)
-* Category
-* Date
-* Notes
+- Amount
+- Type (Income / Expense)
+- Category
+- Date
+- Notes
 
 ### Supported Operations:
 
-* Create transactions
-* View transactions
-* Update transactions
-* Delete transactions
-* Filter by:
-
-  * Date
-  * Category
-  * Type
+- Create transactions
+- View transactions
+- Update transactions
+- Delete transactions
+- Filter by:
+  - Date
+  - Category
+  - Type
 
 ---
 
@@ -127,12 +124,12 @@ Each transaction includes:
 
 The system provides summary-level insights:
 
-* Total income
-* Total expenses
-* Net balance
-* Category-wise breakdown
-* Recent activity
-* Trends (monthly / weekly)
+- Total income
+- Total expenses
+- Net balance
+- Category-wise breakdown
+- Recent activity
+- Trends (monthly / weekly)
 
 This module focuses on **data aggregation logic**, not just CRUD operations.
 
@@ -142,9 +139,9 @@ This module focuses on **data aggregation logic**, not just CRUD operations.
 
 Role-based restrictions are enforced at the **service layer**:
 
-* Viewer → Cannot modify data
-* Analyst → Can view data and analytics
-* Admin → Full access
+- Viewer → Cannot modify data
+- Analyst → Can view data and analytics
+- Admin → Full access
 
 Access checks are implemented before executing business logic.
 
@@ -154,40 +151,40 @@ Access checks are implemented before executing business logic.
 
 ### User APIs
 
-* `POST /users` → Create user
-* `GET /users/{id}` → Get user details
-* `DELETE /users/{id}` → Delete user
+- `POST /users` → Create user
+- `GET /users/{id}` → Get user details
+- `DELETE /users/{id}` → Delete user
 
 ### Transaction APIs
 
-* `POST /transactions` → Create transaction
-* `GET /transactions` → Get all transactions
-* `PUT /transactions/{id}` → Update transaction
-* `DELETE /transactions/{id}` → Delete transaction
+- `POST /transactions` → Create transaction
+- `GET /transactions` → Get all transactions
+- `PUT /transactions/{id}` → Update transaction
+- `DELETE /transactions/{id}` → Delete transaction
 
 ### Analytics APIs
 
-* `GET /analytics/summary` → Get financial summary
-* `GET /analytics/category` → Category-wise totals
+- `GET /analytics/summary` → Get financial summary
+- `GET /analytics/category` → Category-wise totals
 
 ---
 
 ## 🛠 Tech Stack
 
-* **Language:** Java
-* **Framework:** Spring Boot
-* **Build Tool:** Maven
-* **Architecture:** Layered (Controller → Service → Repository)
-* **Storage:** In-memory (HashMap) *(designed for easy DB integration)*
+- **Language:** Java
+- **Framework:** Spring Boot
+- **Build Tool:** Maven
+- **Architecture:** Layered (Controller → Service → Repository)
+- **Storage:** In-memory (HashMap) _(designed for easy DB integration)_
 
 ---
 
 ## 🔒 Security
 
-* Passwords are stored using hashing (SHA-256)
-* Plain-text passwords are never stored
-* Authentication logic handled in service layer
-* Designed for future upgrade to JWT-based authentication
+- Passwords are stored using hashing (SHA-256)
+- Plain-text passwords are never stored
+- Authentication logic handled in service layer
+- Designed for future upgrade to JWT-based authentication
 
 ---
 
@@ -207,29 +204,29 @@ http://localhost:8080
 
 ## 🧪 Current Status
 
-* ✅ User Management
-* 🔄 Role-based Access Control
-* ⏳ Financial Records Module
-* ⏳ Analytics Module
+- ✅ User Management
+- 🔄 Role-based Access Control
+- ⏳ Financial Records Module
+- ⏳ Analytics Module
 
 ---
 
 ## 🚧 Future Enhancements
 
-* Database integration
-* JWT authentication & authorization
-* Pagination & filtering improvements
-* API documentation (Swagger / OpenAPI)
-* Unit & integration testing
-* Rate limiting & validation improvements
+- Database integration
+- JWT authentication & authorization
+- Pagination & filtering improvements
+- API documentation (Swagger / OpenAPI)
+- Unit & integration testing
+- Rate limiting & validation improvements
 
 ---
 
 ## 📌 Assumptions
 
-* In-memory storage is used for simplicity
-* Authentication is simplified (no tokens yet)
-* Focus is on backend architecture and logic rather than production readiness
+- In-memory storage is used for simplicity
+- Authentication is simplified (no tokens yet)
+- Focus is on backend architecture and logic rather than production readiness
 
 ---
 
@@ -238,4 +235,3 @@ http://localhost:8080
 **Ram Prakhyath Annamareddy**
 
 ---
-
