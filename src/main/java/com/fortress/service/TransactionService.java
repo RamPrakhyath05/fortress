@@ -8,6 +8,8 @@ import com.fortress.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class TransactionService {
@@ -75,7 +77,8 @@ public class TransactionService {
             LocalDate date,
             String notes,
             String requesterID
-    ) {
+    ) 
+    {
         User requester = userRepository.findById(requesterID);
         if (requester == null) {
             throw new RuntimeException("Requester not found");
@@ -113,12 +116,37 @@ public class TransactionService {
         String category,
         LocalDate startDate,
         LocalDate endDate
-    ) {
-
+    ) 
+    {
         List<Transaction> transactions = transactionRepository.findByUserID(userID);
         return transactions.stream().filter(t -> type == null || t.getType() == type).filter(t -> category == null || t.getCategory().equalsIgnoreCase(category))
                 .filter(t -> startDate == null || !t.getDate().isBefore(startDate))
                 .filter(t -> endDate == null || !t.getDate().isAfter(endDate))
                 .toList();
+    }
+
+    //Analytics functions
+    public Double getTotalIncome(String userID){
+         return transactionRepository.findByUserID(userID).stream().filter(t -> t.getType() == TransactionType.INCOME)
+            .mapToDouble(Transaction::getAmount).sum();
+    }
+    public Double getTotalExpense(String userID) {
+        return transactionRepository.findByUserID(userID).stream().filter(t -> t.getType() == TransactionType.EXPENSE)
+            .mapToDouble(Transaction::getAmount).sum();
+    }
+    public Double getNetBalance(String userID) {
+        return getTotalIncome(userID) - getTotalExpense(userID);
+    }
+    public Map<String, Double> getCategoryBreakdown(String userID) {
+        Map<String, Double> result = new HashMap<>();
+        for (Transaction t : transactionRepository.findByUserID(userID)) {
+            if (t.getType() == TransactionType.EXPENSE) {
+                result.put(
+                    t.getCategory(),
+                    result.getOrDefault(t.getCategory(), 0.0) + t.getAmount()
+                );
+            }
+        }
+        return result;
     }
 }
