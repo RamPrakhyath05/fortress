@@ -30,8 +30,6 @@ To design and implement a backend system that demonstrates:
 - Business logic implementation
 - Role-based access control
 
-This aligns with the assignment’s goal of evaluating backend engineering thinking, not just functionality.
-
 ---
 
 ## 🧱 System Architecture
@@ -45,21 +43,67 @@ Service Layer (Business Logic + Access Control)
         ↓
 Repository Layer (Data Access)
         ↓
-Storage Layer (In-memory / Database)
+SQLite Database
 ```
 
 ---
 
-## 📦 Project Structure
+## 📦 Project Structure & Directory
 
 ```
-com.fortress
-├── controller
-├── model
-├── repository
-├── service
-├── util
-└── FortressApplication.java
+fortress
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── fortress
+│   │   │           ├── controller
+│   │   │           │   ├── TransactionController.java
+│   │   │           │   ├── TransactionRequest.java
+│   │   │           │   ├── UserController.java
+│   │   │           │   └── UserRequest.java
+│   │   │           │
+│   │   │           ├── exception
+│   │   │           │   ├── BadRequestException.java
+│   │   │           │   ├── NotFoundException.java
+│   │   │           │   ├── UnauthorizedException.java
+│   │   │           │   └── GlobalExceptionHandler.java
+│   │   │           │
+│   │   │           ├── model
+│   │   │           │   ├── Role.java
+│   │   │           │   ├── Transaction.java
+│   │   │           │   ├── TransactionType.java
+│   │   │           │   └── User.java
+│   │   │           │
+│   │   │           ├── repository
+│   │   │           │   ├── TransactionRepository.java
+│   │   │           │   └── UserRepository.java
+│   │   │           │
+│   │   │           ├── service
+│   │   │           │   ├── TransactionService.java
+│   │   │           │   └── UserService.java
+│   │   │           │
+│   │   │           ├── util
+│   │   │           │   └── PasswordHasher.java
+│   │   │           │
+│   │   │           └── FortressApplication.java
+│   │   │
+│   │   └── resources
+│   │       └── application.properties
+│   │
+│   └── test
+│       └── java
+│           └── com
+│               └── fortress
+│                   └── service
+│                       ├── TransactionServiceTest.java
+│                       └── UserServiceTest.java
+│
+├── API_Documentation.md
+├── README.md
+├── pom.xml
+├── mvnw
+└── mvnw.cmd
 ```
 
 ---
@@ -76,18 +120,18 @@ com.fortress
 
 ### Roles:
 
-- **Admin** → Full system access
-- **Analyst** → View records and analytics
-- **Viewer** → Read-only access
+- **ADMIN** → Full system access
+- **ANALYST** → Read + Update
+- **VIEWER** → Read-only
 
 ---
 
-## 💰 Financial Records Management
+## 💰 Transaction Management
 
 Each transaction includes:
 
 - Amount
-- Type (Income / Expense)
+- Type (INCOME / EXPENSE)
 - Category
 - Date
 - Notes
@@ -96,7 +140,7 @@ Each transaction includes:
 
 - Create transactions
 - View transactions
-- Update transactions
+- Update transactions (partial updates supported)
 - Delete transactions
 - Filter transactions by:
   - Type
@@ -114,7 +158,7 @@ The system provides summary-level insights:
 - Net balance
 - Category-wise breakdown
 - Recent transactions
-- Monthly trend of transactions
+- Monthly transaction trends
 
 ---
 
@@ -122,11 +166,11 @@ The system provides summary-level insights:
 
 Role-based restrictions are enforced at the **service layer**:
 
-- **Viewer** → Cannot create, update, or delete
-- **Analyst** → Can view and update data
-- **Admin** → Full access including user management
+- **VIEWER** → Cannot create, update, or delete
+- **ANALYST** → Can read and update
+- **ADMIN** → Full access including user management
 
-All access checks are validated before executing business logic.
+---
 
 ## 🛠 Tech Stack
 
@@ -134,13 +178,13 @@ All access checks are validated before executing business logic.
 - **Framework:** Spring Boot
 - **Build Tool:** Maven
 - **Architecture:** Layered (Controller → Service → Repository)
-- **Storage:** In-memory (HashMap)
+- **Database:** SQLite
 
 ---
 
 ## 🔒 Security
 
-- Passwords are hashed using SHA-256
+- Passwords are hashed using **SHA-256**
 - No plain-text password storage
 - Authentication handled at service layer
 - Designed for future JWT integration
@@ -149,10 +193,13 @@ All access checks are validated before executing business logic.
 
 ## ⚠️ Validation & Error Handling
 
-- Basic input validation implemented
-- Invalid operations handled using exceptions
-- Meaningful error messages returned to client
-- Designed for extension into global exception handling
+- Input validation for role, transaction type, and date format
+- Exception-based error handling
+- Standard HTTP status codes used:
+  - 200 → Success
+  - 400 → Bad Request
+  - 403 → Forbidden
+  - 404 → Not Found
 
 ---
 
@@ -172,9 +219,9 @@ http://localhost:8080
 
 ## 📌 Assumptions
 
-- In-memory storage is used for simplicity
-- Authentication is simplified (no tokens)
+- Authentication is simplified (no JWT/token)
 - Focus is on backend design and logic, not production deployment
+- SQLite is used as a lightweight local database
 
 ---
 
