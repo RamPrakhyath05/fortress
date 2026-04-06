@@ -5,32 +5,66 @@ import com.fortress.model.*;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    // View all users
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    // Create user
     @PostMapping
     public String createUser(@RequestBody UserRequest request) {
-
         Role role = Role.valueOf(request.getRole().toUpperCase());
-
         userService.addUser(
                 request.getUserName(),
                 request.getPassword(),
-                role
-        );
-
+                role);
         return "User created successfully";
     }
 
+    // Get User by ID
     @GetMapping("/{id}")
-    public User getUserDetails(@PathVariable String id){
+    public User getUserDetails(@PathVariable String id) {
         return userService.getUserDetails(id);
+    }
+
+    // Verify User login
+    @PostMapping("/login")
+    public User login(@RequestBody UserRequest request) {
+        return userService.verifyPassword(
+                request.getUserName(),
+                request.getPassword());
+
+    }
+
+    // Update User by ID
+    @PutMapping("/{id}")
+    public String updateUser(@PathVariable String id, @RequestBody UserRequest request,
+            @RequestParam String modifierID) {
+        Role role = Role.valueOf(request.getRole().toUpperCase());
+        userService.updateUser(
+                id,
+                request.getUserName(),
+                role,
+                modifierID);
+        return "User details updated successfully.";
+    }
+
+    // Delete User by ID
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable String id, @RequestParam String modifierID) {
+        userService.deleteUser(id, modifierID);
+        return "User Deleted Successfully.";
     }
 }

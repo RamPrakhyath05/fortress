@@ -22,4 +22,17 @@ public class UserRepository {
     public User findById(String userID) {
         return users.get(userID);
     }
+
+    public User findByUserName(String userName) {
+        for (User user : users.values()) {
+            if (user.getUserName().equals(userName)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public HashMap<String, User> getAllUsers() {
+        return users;
+    }
 }
