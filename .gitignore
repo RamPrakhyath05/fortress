@@ -1,6 +1,9 @@
 # Maven
 target/
 
+# Database (SQlite)
+fortress.db
+
 # Logs
 *.log
 

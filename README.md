@@ -2,6 +2,8 @@
 
 A Finance Data Processing and Access Control Backend Application
 
+---
+
 ## 🚀 Overview
 
 **Fortress** is a backend system built using **Spring Boot** to manage financial data with structured access control and clean architecture.
@@ -11,8 +13,8 @@ The system simulates a real-world **finance dashboard backend**, where multiple 
 This project focuses on:
 
 - Clean backend architecture
-- API design using REST principles
-- Role-based access control
+- RESTful API design
+- Role-based access control (RBAC)
 - Data processing and aggregation logic
 - Maintainable and scalable system design
 
@@ -34,8 +36,6 @@ This aligns with the assignment’s goal of evaluating backend engineering think
 
 ## 🧱 System Architecture
 
-The system follows a layered architecture:
-
 ```
 Client (Postman / Frontend)
         ↓
@@ -55,26 +55,10 @@ Storage Layer (In-memory / Database)
 ```
 com.fortress
 ├── controller
-│   ├── UserController.java
-│   ├── UserRequest.java
-│   └── TransactionController.java
-│
-├── service
-│   ├── UserService.java
-│   ├── TransactionService.java
-│   └── AnalyticsService.java
-│
-├── repository
-│   ├── UserRepository.java
-│   └── TransactionRepository.java
-│
 ├── model
-│   ├── User.java
-│   └── Transaction.java
-│
+├── repository
+├── service
 ├── util
-│   └── PasswordHasher.java
-│
 └── FortressApplication.java
 ```
 
@@ -84,15 +68,15 @@ com.fortress
 
 ### Features:
 
-- Create and manage users
-- Secure password storage using hashing
+- Create, update, and delete users
 - Assign roles to users
-- Enable/disable users
-- Authenticate users
+- Enable/disable users (isActive = true/false)
+- Authenticate users (login)
+- Secure password storage using hashing
 
 ### Roles:
 
-- **Admin** → Full system access (manage users & records)
+- **Admin** → Full system access
 - **Analyst** → View records and analytics
 - **Viewer** → Read-only access
 
@@ -114,10 +98,10 @@ Each transaction includes:
 - View transactions
 - Update transactions
 - Delete transactions
-- Filter by:
-  - Date
-  - Category
+- Filter transactions by:
   - Type
+  - Category
+  - Date range
 
 ---
 
@@ -129,46 +113,20 @@ The system provides summary-level insights:
 - Total expenses
 - Net balance
 - Category-wise breakdown
-- Recent activity
-- Trends (monthly / weekly)
-
-This module focuses on **data aggregation logic**, not just CRUD operations.
+- Recent transactions
+- Monthly trend of transactions
 
 ---
 
-## 🔐 Access Control
+## 🔐 Access Control (RBAC)
 
 Role-based restrictions are enforced at the **service layer**:
 
-- Viewer → Cannot modify data
-- Analyst → Can view data and analytics
-- Admin → Full access
+- **Viewer** → Cannot create, update, or delete
+- **Analyst** → Can view and update data
+- **Admin** → Full access including user management
 
-Access checks are implemented before executing business logic.
-
----
-
-## 🌐 API Design (Planned)
-
-### User APIs
-
-- `POST /users` → Create user
-- `GET /users/{id}` → Get user details
-- `DELETE /users/{id}` → Delete user
-
-### Transaction APIs
-
-- `POST /transactions` → Create transaction
-- `GET /transactions` → Get all transactions
-- `PUT /transactions/{id}` → Update transaction
-- `DELETE /transactions/{id}` → Delete transaction
-
-### Analytics APIs
-
-- `GET /analytics/summary` → Get financial summary
-- `GET /analytics/category` → Category-wise totals
-
----
+All access checks are validated before executing business logic.
 
 ## 🛠 Tech Stack
 
@@ -176,16 +134,25 @@ Access checks are implemented before executing business logic.
 - **Framework:** Spring Boot
 - **Build Tool:** Maven
 - **Architecture:** Layered (Controller → Service → Repository)
-- **Storage:** In-memory (HashMap) _(designed for easy DB integration)_
+- **Storage:** In-memory (HashMap)
 
 ---
 
 ## 🔒 Security
 
-- Passwords are stored using hashing (SHA-256)
-- Plain-text passwords are never stored
-- Authentication logic handled in service layer
-- Designed for future upgrade to JWT-based authentication
+- Passwords are hashed using SHA-256
+- No plain-text password storage
+- Authentication handled at service layer
+- Designed for future JWT integration
+
+---
+
+## ⚠️ Validation & Error Handling
+
+- Basic input validation implemented
+- Invalid operations handled using exceptions
+- Meaningful error messages returned to client
+- Designed for extension into global exception handling
 
 ---
 
@@ -195,7 +162,7 @@ Access checks are implemented before executing business logic.
 mvn spring-boot:run
 ```
 
-Application runs on:
+Application runs at:
 
 ```
 http://localhost:8080
@@ -203,31 +170,19 @@ http://localhost:8080
 
 ---
 
-## 🧪 Current Status
+## 📌 Assumptions
 
-- ✅ User Management
-- 🔄 Role-based Access Control
-- ⏳ Financial Records Module
-- ⏳ Analytics Module
+- In-memory storage is used for simplicity
+- Authentication is simplified (no tokens)
+- Focus is on backend design and logic, not production deployment
 
 ---
 
 ## 🚧 Future Enhancements
 
-- Database integration
-- JWT authentication & authorization
-- Pagination & filtering improvements
-- API documentation (Swagger / OpenAPI)
-- Unit & integration testing
-- Rate limiting & validation improvements
-
----
-
-## 📌 Assumptions
-
-- In-memory storage is used for simplicity
-- Authentication is simplified (no tokens yet)
-- Focus is on backend architecture and logic rather than production readiness
+- JWT-based authentication
+- Pagination and sorting
+- Integration Testing
 
 ---
 

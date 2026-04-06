@@ -48,6 +48,14 @@ public class UserController {
 
     }
 
+    // Update User Status
+    @PutMapping("/{id}/status")
+    public String updateUserStatus(@PathVariable String id, @RequestParam boolean isActive,
+            @RequestParam String modifierID) {
+        userService.toggleUserStatus(id, isActive, modifierID);
+        return "User status updated successfully";
+    }
+
     // Update User by ID
     @PutMapping("/{id}")
     public String updateUser(@PathVariable String id, @RequestBody UserRequest request,

@@ -15,6 +15,7 @@ import java.util.HashMap;
 @RequestMapping("/transactions")
 public class TransactionController {
     private final TransactionService transactionService;
+
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
@@ -22,9 +23,7 @@ public class TransactionController {
     @PostMapping
     public String createTransaction(
             @RequestBody TransactionRequest request,
-            @RequestParam String requesterID
-    ) 
-    {
+            @RequestParam String requesterID) {
         TransactionType type = TransactionType.valueOf(request.getType().toUpperCase());
         LocalDate date = LocalDate.parse(request.getDate());
         transactionService.addTransaction(
@@ -34,8 +33,7 @@ public class TransactionController {
                 request.getCategory(),
                 date,
                 request.getNotes(),
-                requesterID
-        );
+                requesterID);
         return "Transaction created successfully";
     }
 
@@ -44,16 +42,13 @@ public class TransactionController {
         return transactionService.getTransactionById(id);
     }
 
-    
     @GetMapping("/user/{userID}")
     public List<Transaction> getUserTransactions(
             @PathVariable String userID,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate
-    ) 
-    {
+            @RequestParam(required = false) String endDate) {
         TransactionType transactionType = (type != null) ? TransactionType.valueOf(type.toUpperCase()) : null;
         LocalDate start = (startDate != null) ? LocalDate.parse(startDate) : null;
         LocalDate end = (endDate != null) ? LocalDate.parse(endDate) : null;
@@ -62,18 +57,16 @@ public class TransactionController {
                 transactionType,
                 category,
                 start,
-                end
-        );
+                end);
     }
 
     @PutMapping("/{id}")
     public String updateTransaction(
             @PathVariable String id,
             @RequestBody TransactionRequest request,
-            @RequestParam String requesterID
-    ) 
-    {
-        TransactionType type = (request.getType() != null) ? TransactionType.valueOf(request.getType().toUpperCase()) : null;
+            @RequestParam String requesterID) {
+        TransactionType type = (request.getType() != null) ? TransactionType.valueOf(request.getType().toUpperCase())
+                : null;
         LocalDate date = (request.getDate() != null) ? LocalDate.parse(request.getDate()) : null;
         transactionService.updateTransaction(
                 id,
@@ -82,17 +75,14 @@ public class TransactionController {
                 request.getCategory(),
                 date,
                 request.getNotes(),
-                requesterID
-        );
+                requesterID);
         return "Transaction updated successfully";
     }
-    
+
     @DeleteMapping("/{id}")
     public String deleteTransaction(
             @PathVariable String id,
-            @RequestParam String requesterID
-    ) 
-    {
+            @RequestParam String requesterID) {
         transactionService.deleteTransaction(id, requesterID);
         return "Transaction deleted successfully";
     }
@@ -105,6 +95,7 @@ public class TransactionController {
         response.put("netBalance", transactionService.getNetBalance(userID));
         response.put("categoryBreakdown", transactionService.getCategoryBreakdown(userID));
         response.put("recentTransactions", transactionService.getTransactionsByUser(userID).stream().limit(5).toList());
+        response.put("monthlyTrends", transactionService.getMonthlyExpenseTrends(userID));
         return response;
     }
 }
