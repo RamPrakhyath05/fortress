@@ -21,7 +21,8 @@ public class TransactionController {
     public String createTransaction(
             @RequestBody TransactionRequest request,
             @RequestParam String requesterID
-    ) {
+    ) 
+    {
         TransactionType type = TransactionType.valueOf(request.getType().toUpperCase());
         LocalDate date = LocalDate.parse(request.getDate());
         transactionService.addTransaction(
@@ -41,9 +42,26 @@ public class TransactionController {
         return transactionService.getTransactionById(id);
     }
 
+    
     @GetMapping("/user/{userID}")
-    public List<Transaction> getUserTransactions(@PathVariable String userID) {
-        return transactionService.getTransactionsByUser(userID);
+    public List<Transaction> getUserTransactions(
+            @PathVariable String userID,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) 
+    {
+        TransactionType transactionType = (type != null) ? TransactionType.valueOf(type.toUpperCase()) : null;
+        LocalDate start = (startDate != null) ? LocalDate.parse(startDate) : null;
+        LocalDate end = (endDate != null) ? LocalDate.parse(endDate) : null;
+        return transactionService.getFilteredTransactions(
+                userID,
+                transactionType,
+                category,
+                start,
+                end
+        );
     }
 
     @PutMapping("/{id}")
@@ -51,16 +69,11 @@ public class TransactionController {
             @PathVariable String id,
             @RequestBody TransactionRequest request,
             @RequestParam String requesterID
-    ) {
+    ) 
+    {
 
-        TransactionType type = (request.getType() != null)
-                ? TransactionType.valueOf(request.getType().toUpperCase())
-                : null;
-
-        LocalDate date = (request.getDate() != null)
-                ? LocalDate.parse(request.getDate())
-                : null;
-
+        TransactionType type = (request.getType() != null) ? TransactionType.valueOf(request.getType().toUpperCase()) : null;
+        LocalDate date = (request.getDate() != null) ? LocalDate.parse(request.getDate()) : null;
         transactionService.updateTransaction(
                 id,
                 request.getAmount(),
@@ -70,7 +83,6 @@ public class TransactionController {
                 request.getNotes(),
                 requesterID
         );
-
         return "Transaction updated successfully";
     }
     
@@ -78,7 +90,8 @@ public class TransactionController {
     public String deleteTransaction(
             @PathVariable String id,
             @RequestParam String requesterID
-    ) {
+    ) 
+    {
         transactionService.deleteTransaction(id, requesterID);
         return "Transaction deleted successfully";
     }

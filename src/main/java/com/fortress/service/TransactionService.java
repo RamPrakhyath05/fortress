@@ -106,4 +106,19 @@ public class TransactionService {
         );
         transactionRepository.save(transactionID, updated);
     }
+
+    public List<Transaction> getFilteredTransactions(
+        String userID,
+        TransactionType type,
+        String category,
+        LocalDate startDate,
+        LocalDate endDate
+    ) {
+
+        List<Transaction> transactions = transactionRepository.findByUserID(userID);
+        return transactions.stream().filter(t -> type == null || t.getType() == type).filter(t -> category == null || t.getCategory().equalsIgnoreCase(category))
+                .filter(t -> startDate == null || !t.getDate().isBefore(startDate))
+                .filter(t -> endDate == null || !t.getDate().isAfter(endDate))
+                .toList();
+    }
 }
