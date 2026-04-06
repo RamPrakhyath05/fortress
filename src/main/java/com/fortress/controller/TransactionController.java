@@ -18,7 +18,10 @@ public class TransactionController {
     }
 
     @PostMapping
-    public String createTransaction(@RequestBody TransactionRequest request) {
+    public String createTransaction(
+            @RequestBody TransactionRequest request,
+            @RequestParam String requesterID
+    ) {
         TransactionType type = TransactionType.valueOf(request.getType().toUpperCase());
         LocalDate date = LocalDate.parse(request.getDate());
         transactionService.addTransaction(
@@ -27,7 +30,8 @@ public class TransactionController {
                 type,
                 request.getCategory(),
                 date,
-                request.getNotes()
+                request.getNotes(),
+                requesterID
         );
         return "Transaction created successfully";
     }
@@ -42,9 +46,40 @@ public class TransactionController {
         return transactionService.getTransactionsByUser(userID);
     }
 
+    @PutMapping("/{id}")
+    public String updateTransaction(
+            @PathVariable String id,
+            @RequestBody TransactionRequest request,
+            @RequestParam String requesterID
+    ) {
+
+        TransactionType type = (request.getType() != null)
+                ? TransactionType.valueOf(request.getType().toUpperCase())
+                : null;
+
+        LocalDate date = (request.getDate() != null)
+                ? LocalDate.parse(request.getDate())
+                : null;
+
+        transactionService.updateTransaction(
+                id,
+                request.getAmount(),
+                type,
+                request.getCategory(),
+                date,
+                request.getNotes(),
+                requesterID
+        );
+
+        return "Transaction updated successfully";
+    }
+    
     @DeleteMapping("/{id}")
-    public String deleteTransaction(@PathVariable String id) {
-        transactionService.deleteTransaction(id);
-        return "Transaction deleted";
+    public String deleteTransaction(
+            @PathVariable String id,
+            @RequestParam String requesterID
+    ) {
+        transactionService.deleteTransaction(id, requesterID);
+        return "Transaction deleted successfully";
     }
 }
