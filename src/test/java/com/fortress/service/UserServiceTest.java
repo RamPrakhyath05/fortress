@@ -14,7 +14,10 @@ public class UserServiceTest {
     private UserService userService;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
+        java.nio.file.Files.deleteIfExists(
+                java.nio.file.Paths.get("fortress.db"));
+
         userService = new UserService(new UserRepository(), new PasswordHasher());
     }
 
@@ -52,8 +55,10 @@ public class UserServiceTest {
     void shouldBlockInactiveUserLogin() {
         userService.addUser("ram", "123", Role.ADMIN);
 
-        // deactivate user manually
-        userService.toggleUserStatus("1", false, "1");
+        User user = userService.verifyPassword("ram", "123");
+        String id = user.getUserID();
+
+        userService.toggleUserStatus(id, false, id);
 
         assertThrows(RuntimeException.class, () -> {
             userService.verifyPassword("ram", "123");

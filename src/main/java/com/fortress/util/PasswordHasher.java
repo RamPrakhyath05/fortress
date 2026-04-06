@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PasswordHasher {
-
     public String getHashedPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -17,9 +16,7 @@ public class PasswordHasher {
             for (byte b : hashBytes) {
                 hexString.append(String.format("%02x", b));
             }
-
             return hexString.toString();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

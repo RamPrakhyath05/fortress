@@ -3,6 +3,7 @@ package com.fortress.controller;
 import com.fortress.model.Transaction;
 import com.fortress.model.TransactionType;
 import com.fortress.service.TransactionService;
+import com.fortress.exception.*;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,18 @@ public class TransactionController {
     public String createTransaction(
             @RequestBody TransactionRequest request,
             @RequestParam String requesterID) {
-        TransactionType type = TransactionType.valueOf(request.getType().toUpperCase());
-        LocalDate date = LocalDate.parse(request.getDate());
+        TransactionType type;
+        LocalDate date;
+        try {
+            type = TransactionType.valueOf(request.getType().toUpperCase());
+        } catch (Exception e) {
+            throw new BadRequestException("Invalid transaction type");
+        }
+        try {
+            date = LocalDate.parse(request.getDate());
+        } catch (Exception e) {
+            throw new BadRequestException("Invalid date format");
+        }
         transactionService.addTransaction(
                 request.getUserID(),
                 request.getAmount(),

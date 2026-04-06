@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.fortress.model.*;
 import com.fortress.repository.TransactionRepository;
 import com.fortress.repository.UserRepository;
+import com.fortress.exception.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,17 +28,17 @@ public class TransactionService {
             String category, LocalDate date, String notes, String requesterID) {
         User user = userRepository.findById(userID);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
         User requester = userRepository.findById(requesterID);
         if (requester == null) {
-            throw new RuntimeException("Requester not found");
+            throw new NotFoundException("Requester not found");
         }
         if (!requester.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         if (requester.getRole() == Role.VIEWER) {
-            throw new RuntimeException("Access denied: VIEWER cannot create transactions");
+            throw new UnauthorizedException("Access denied: VIEWER cannot create transactions");
         }
         String transactionID = "transac-" + UUID.randomUUID().toString().substring(0, 8);
         // Now using an actual string ID instead of just an integer
@@ -54,7 +55,11 @@ public class TransactionService {
 
     // To fetch transaction details using transactionID
     public Transaction getTransactionById(String transactionID) {
-        return transactionRepository.findByTransactionID(transactionID);
+        Transaction transaction = transactionRepository.findByTransactionID(transactionID);
+        if (transaction == null) {
+            throw new NotFoundException("Transaction not found");
+        }
+        return transaction;
     }
 
     // To fetch all transactions of a specific user
@@ -66,17 +71,17 @@ public class TransactionService {
     public void deleteTransaction(String transactionID, String requesterID) {
         Transaction existing = transactionRepository.findByTransactionID(transactionID);
         if (existing == null) {
-            throw new RuntimeException("Transaction not found");
+            throw new NotFoundException("Transaction not found");
         }
         User requester = userRepository.findById(requesterID);
         if (requester == null) {
-            throw new RuntimeException("Requester not found");
+            throw new NotFoundException("Requester not found");
         }
         if (!requester.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         if (requester.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Only ADMIN can delete transactions");
+            throw new UnauthorizedException("Only ADMIN can delete transactions");
         }
         transactionRepository.delete(transactionID);
     }
@@ -92,17 +97,17 @@ public class TransactionService {
             String requesterID) {
         User requester = userRepository.findById(requesterID);
         if (requester == null) {
-            throw new RuntimeException("Requester not found");
+            throw new NotFoundException("Requester not found");
         }
         if (!requester.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         if (requester.getRole() == Role.VIEWER) {
-            throw new RuntimeException("Access denied: VIEWER cannot modify transactions");
+            throw new UnauthorizedException("Access denied: VIEWER cannot modify transactions");
         }
         Transaction existing = transactionRepository.findByTransactionID(transactionID);
         if (existing == null) {
-            throw new RuntimeException("Transaction not found");
+            throw new NotFoundException("Transaction not found");
         }
         Double updatedAmount = (amount != null) ? amount : existing.getAmount();
         TransactionType updatedType = (type != null) ? type : existing.getType();
@@ -139,18 +144,14 @@ public class TransactionService {
 
     // To calculate total income for a user
     public Double getTotalIncome(String userID) {
-        return transactionRepository.findByUserID(userID)
-                .stream()
-                .filter(t -> t.getType() == TransactionType.INCOME)
+        return transactionRepository.findByUserID(userID).stream().filter(t -> t.getType() == TransactionType.INCOME)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
     }
 
     // To calculate total expense for a user
     public Double getTotalExpense(String userID) {
-        return transactionRepository.findByUserID(userID)
-                .stream()
-                .filter(t -> t.getType() == TransactionType.EXPENSE)
+        return transactionRepository.findByUserID(userID).stream().filter(t -> t.getType() == TransactionType.EXPENSE)
                 .mapToDouble(Transaction::getAmount)
                 .sum();
     }
@@ -165,7 +166,9 @@ public class TransactionService {
         Map<String, Double> result = new HashMap<>();
         for (Transaction t : transactionRepository.findByUserID(userID)) {
             if (t.getType() == TransactionType.EXPENSE) {
-                result.put(t.getCategory(), result.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
+                result.put(
+                        t.getCategory(),
+                        result.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
             }
         }
         return result;
@@ -177,8 +180,12 @@ public class TransactionService {
         Map<String, Double> trends = new HashMap<>();
         for (Transaction t : transactions) {
             if (t.getType() == TransactionType.EXPENSE) {
-                String month = t.getDate().getYear() + "-" + String.format("%02d", t.getDate().getMonthValue());
-                trends.put(month, trends.getOrDefault(month, 0.0) + t.getAmount());
+                String month = t.getDate().getYear() + "-" +
+                        String.format("%02d", t.getDate().getMonthValue());
+
+                trends.put(
+                        month,
+                        trends.getOrDefault(month, 0.0) + t.getAmount());
             }
         }
         return trends;

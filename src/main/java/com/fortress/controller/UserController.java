@@ -2,6 +2,7 @@ package com.fortress.controller;
 
 import com.fortress.service.UserService;
 import com.fortress.model.*;
+import com.fortress.exception.*;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,14 @@ public class UserController {
     // Create user
     @PostMapping
     public String createUser(@RequestBody UserRequest request) {
-        Role role = Role.valueOf(request.getRole().toUpperCase());
+        Role role = null;
+        if (request.getRole() != null) {
+            try {
+                role = Role.valueOf(request.getRole().toUpperCase());
+            } catch (Exception e) {
+                throw new BadRequestException("Invalid role");
+            }
+        }
         userService.addUser(
                 request.getUserName(),
                 request.getPassword(),
@@ -60,7 +68,14 @@ public class UserController {
     @PutMapping("/{id}")
     public String updateUser(@PathVariable String id, @RequestBody UserRequest request,
             @RequestParam String modifierID) {
-        Role role = Role.valueOf(request.getRole().toUpperCase());
+        Role role = null;
+        if (request.getRole() != null) {
+            try {
+                role = Role.valueOf(request.getRole().toUpperCase());
+            } catch (Exception e) {
+                throw new BadRequestException("Invalid role");
+            }
+        }
         userService.updateUser(
                 id,
                 request.getUserName(),

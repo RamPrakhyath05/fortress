@@ -6,6 +6,7 @@ import com.fortress.model.Role;
 import com.fortress.model.User;
 import com.fortress.repository.UserRepository;
 import com.fortress.util.PasswordHasher;
+import com.fortress.exception.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,21 +23,25 @@ public class UserService {
 
     // To fetch user details using userID
     public User getUserDetails(String userID) {
-        return userRepository.findById(userID);
+        User user = userRepository.findById(userID);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        return user;
     }
 
     // To verify login credentials of a user
     public User verifyPassword(String userName, String userPassword) {
         User user = userRepository.findByUserName(userName);
         if (user == null) {
-            throw new RuntimeException("User not found.");
+            throw new NotFoundException("User not found");
         }
         if (!user.isActive()) {
-            throw new RuntimeException("User is inactive");
+            throw new UnauthorizedException("User is inactive");
         }
         String hashedInput = hasher.getHashedPassword(userPassword);
         if (!hashedInput.equals(user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new BadRequestException("Invalid password");
         }
         return user;
     }
@@ -50,7 +55,7 @@ public class UserService {
     public void addUser(String userName, String userPassword, Role role) {
         User existing = userRepository.findByUserName(userName);
         if (existing != null) {
-            throw new RuntimeException("Username already exists");
+            throw new BadRequestException("Username already exists");
         }
         String userID = "user-" + UUID.randomUUID().toString().substring(0, 6);
         // Generating a short unique ID for the user
@@ -63,19 +68,24 @@ public class UserService {
     public void toggleUserStatus(String userID, boolean isActive, String requesterID) {
         User modifier = userRepository.findById(requesterID);
         if (modifier == null) {
-            throw new RuntimeException("Requester not found");
+            throw new NotFoundException("Requester not found");
         }
         if (!modifier.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         if (modifier.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Access denied, ADMIN only");
+            throw new UnauthorizedException("Access denied, ADMIN only");
         }
         User user = userRepository.findById(userID);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
-        User updated = new User(user.getUserID(), user.getUserName(), user.getPassword(), user.getRole(), isActive);
+        User updated = new User(
+                user.getUserID(),
+                user.getUserName(),
+                user.getPassword(),
+                user.getRole(),
+                isActive);
         userRepository.save(userID, updated);
     }
 
@@ -83,17 +93,17 @@ public class UserService {
     public void deleteUser(String userID, String requesterID) {
         User modifier = userRepository.findById(requesterID);
         if (modifier == null) {
-            throw new RuntimeException("Requester not found");
+            throw new NotFoundException("Requester not found");
         }
         if (modifier.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Access denied, ADMIN only");
+            throw new UnauthorizedException("Access denied, ADMIN only");
         }
         if (!modifier.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         User existing = userRepository.findById(userID);
         if (existing == null) {
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
         userRepository.delete(userID);
     }
@@ -102,22 +112,23 @@ public class UserService {
     public void updateUser(String userID, String newUserName, Role newRole, String requesterID) {
         User modifier = userRepository.findById(requesterID);
         if (modifier == null) {
-            throw new RuntimeException("Modifier not found");
+            throw new NotFoundException("Modifier not found");
         }
         if (modifier.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Access denied, ADMIN only");
+            throw new UnauthorizedException("Access denied, ADMIN only");
         }
         if (!modifier.isActive()) {
-            throw new RuntimeException("Inactive user cannot perform actions");
+            throw new UnauthorizedException("Inactive user cannot perform actions");
         }
         User existingUser = userRepository.findById(userID);
         if (existingUser == null) {
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
         if (newUserName != null) {
             User existing = userRepository.findByUserName(newUserName);
+
             if (existing != null && !existing.getUserID().equals(userID)) {
-                throw new RuntimeException("Username already taken");
+                throw new BadRequestException("Username already taken");
             }
         }
         String updatedName = (newUserName != null)

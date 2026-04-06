@@ -1,8 +1,8 @@
-# Fortress API Documentation
+# 📘 Fortress API Documentation
 
 ---
 
-## Base URL ( Local development )
+## 🌐 Base URL
 
 ```
 http://localhost:8080
@@ -10,21 +10,21 @@ http://localhost:8080
 
 ---
 
-# USER MODULE
+# 👤 USER MODULE
 
 ---
 
-## Get All Users
+## 🔹 Get All Users
 
 **GET** `/users`
 
 ### Response
 
-Returns list of all users
+- **200 OK** → Returns list of all users
 
 ---
 
-## Create User
+## 🔹 Create User
 
 **POST** `/users`
 
@@ -38,28 +38,44 @@ Returns list of all users
 }
 ```
 
-### Response
+### Responses
 
-```
-200 OK
-User created successfully
-```
+- **200 OK**
+
+  ```
+  User created successfully
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Invalid role
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Username already exists
+  ```
 
 ---
 
-## Get User by ID
+## 🔹 Get User by ID
 
 **GET** `/users/{id}`
 
-### Example
+### Responses
 
-```
-GET /users/1
-```
+- **200 OK** → Returns user object
+- **404 Not Found**
+
+  ```
+  User not found
+  ```
 
 ---
 
-## Login
+## 🔹 Login
 
 **POST** `/users/login`
 
@@ -72,47 +88,79 @@ GET /users/1
 }
 ```
 
-### Response
+### Responses
 
-Returns user object
+- **200 OK** → Returns user object
+- **404 Not Found**
 
-### Notes
+  ```
+  User not found
+  ```
 
-- Login is session-less (no JWT/token)
-- Fails if user is inactive
+- **400 Bad Request**
+
+  ```
+  Invalid password
+  ```
+
+- **403 Forbidden**
+
+  ```
+  User is inactive
+  ```
 
 ---
 
-## Update User Status (Activate / Deactivate)
+## 🔹 Update User Status
 
 **PUT** `/users/{id}/status`
 
 ### Query Parameters
 
 - `isActive` → true / false
-- `modifierID` → Admin user ID
+- `modifierID` → Admin ID
 
-### Example
+### Responses
 
-```
-PUT /users/2/status?isActive=false&modifierID=1
-```
+- **200 OK**
 
-### Response
+  ```
+  User status updated successfully
+  ```
 
-```
-User status updated successfully
-```
+- **403 Forbidden**
+
+  ```
+  Access denied, ADMIN only
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Inactive user cannot perform actions
+  ```
+
+- **404 Not Found**
+
+  ```
+  User not found
+  ```
+
+- **404 Not Found**
+
+  ```
+  Requester not found
+  ```
 
 ---
 
-## Update User
+## 🔹 Update User
 
 **PUT** `/users/{id}`
 
 ### Query Parameters
 
-- `modifierID` → Admin user ID
+- `modifierID`
 
 ### Request Body
 
@@ -123,47 +171,87 @@ User status updated successfully
 }
 ```
 
-### Example
+### Responses
 
-```
-PUT /users/2?modifierID=1
-```
+- **200 OK**
+
+  ```
+  User details updated successfully
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Invalid role
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Username already taken
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Access denied, ADMIN only
+  ```
+
+- **404 Not Found**
+
+  ```
+  User not found
+  ```
 
 ---
 
-## Delete User
+## 🔹 Delete User
 
 **DELETE** `/users/{id}`
 
 ### Query Parameters
 
-- `modifierID` → Admin user ID
+- `modifierID`
 
-### Example
+### Responses
 
-```
-DELETE /users/2?modifierID=1
-```
+- **200 OK**
+
+  ```
+  User Deleted Successfully
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Access denied, ADMIN only
+  ```
+
+- **404 Not Found**
+
+  ```
+  User not found
+  ```
 
 ---
 
-# TRANSACTION MODULE
+# 💰 TRANSACTION MODULE
 
 ---
 
-## Create Transaction
+## 🔹 Create Transaction
 
 **POST** `/transactions`
 
 ### Query Parameters
 
-- `requesterID` → User performing the action
+- `requesterID`
 
 ### Request Body
 
 ```json
 {
-  "userID": "1",
+  "userID": "user-ab12cd",
   "amount": 5000,
   "type": "INCOME",
   "category": "Salary",
@@ -172,76 +260,79 @@ DELETE /users/2?modifierID=1
 }
 ```
 
+### Responses
+
+- **200 OK**
+
+  ```
+  Transaction created successfully
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Invalid transaction type
+  ```
+
+- **400 Bad Request**
+
+  ```
+  Invalid date format
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Access denied
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Inactive user cannot perform actions
+  ```
+
 ---
 
-## Get Transaction by ID
+## 🔹 Get Transaction by ID
 
 **GET** `/transactions/{id}`
 
-### Example
+### Responses
 
-```
-GET /transactions/1
-```
+- **200 OK** → Returns transaction object
+- **404 Not Found**
+
+  ```
+  Transaction not found
+  ```
 
 ---
 
-## Get User Transactions (with Filtering)
+## 🔹 Get User Transactions (Filtering)
 
 **GET** `/transactions/user/{userID}`
 
----
-
-### Optional Query Parameters
+### Query Parameters (optional)
 
 - `type` → INCOME / EXPENSE
-- `category` → e.g. Food
+- `category`
 - `startDate` → yyyy-mm-dd
 - `endDate` → yyyy-mm-dd
 
----
+### Responses
 
-### Examples
-
-#### All transactions
-
-```
-GET /transactions/user/1
-```
-
-#### Filter by type
-
-```
-GET /transactions/user/1?type=EXPENSE
-```
-
-#### Filter by category
-
-```
-GET /transactions/user/1?category=Food
-```
-
-#### Combined filter
-
-```
-GET /transactions/user/1?type=EXPENSE&category=Food
-```
-
-#### Date range
-
-```
-GET /transactions/user/1?startDate=2026-04-01&endDate=2026-04-30
-```
+- **200 OK** → Returns filtered transactions list
 
 ---
 
-## Update Transaction
+## 🔹 Update Transaction
 
 **PUT** `/transactions/{id}`
 
 ### Query Parameters
 
-- `requesterID` → User performing action
+- `requesterID`
 
 ### Request Body (partial allowed)
 
@@ -252,35 +343,69 @@ GET /transactions/user/1?startDate=2026-04-01&endDate=2026-04-30
 }
 ```
 
+### Responses
+
+- **200 OK**
+
+  ```
+  Transaction updated successfully
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Access denied
+  ```
+
+- **404 Not Found**
+
+  ```
+  Transaction not found
+  ```
+
 ---
 
-## Delete Transaction
+## 🔹 Delete Transaction
 
 **DELETE** `/transactions/{id}`
 
 ### Query Parameters
 
-- `requesterID` → User performing action
+- `requesterID`
+
+### Responses
+
+- **200 OK**
+
+  ```
+  Transaction deleted successfully
+  ```
+
+- **403 Forbidden**
+
+  ```
+  Access denied, ADMIN only
+  ```
+
+- **404 Not Found**
+
+  ```
+  Transaction not found
+  ```
 
 ---
 
-# DASHBOARD / ANALYTICS
+# 📊 DASHBOARD / ANALYTICS
 
 ---
 
-## Get Dashboard Summary
+## 🔹 Get Dashboard Summary
 
 **GET** `/transactions/dashboard/{userID}`
 
-### Example
+### Response
 
-```
-GET /transactions/dashboard/1
-```
-
----
-
-## Response
+- **200 OK**
 
 ```json
 {
@@ -289,12 +414,11 @@ GET /transactions/dashboard/1
   "netBalance": 49200,
   "categoryBreakdown": {
     "Food": 800,
-    "Transport": 800,
-    "Entertainment": 1200
+    "Transport": 800
   },
   "recentTransactions": [
     {
-      "transactionID": "1",
+      "transactionID": "transac-abc123",
       "amount": 5000
     }
   ],
@@ -306,46 +430,63 @@ GET /transactions/dashboard/1
 
 ---
 
-# ACCESS CONTROL (RBAC)
+# 🔐 ACCESS CONTROL (RBAC)
 
-| Role    | Permissions   |
-| ------- | ------------- |
-| VIEWER  | Read-only     |
-| ANALYST | Read + Update |
-| ADMIN   | Full access   |
-
----
-
-# ERROR HANDLING
-
-Common error scenarios:
-
-- Invalid role → `Invalid role`
-- Invalid transaction type → `Invalid transaction type`
-- Unauthorized action → `Access denied`
-- User not found → `User not found`
-- Inactive user → `User is inactive`
+| Role    | Permissions                                      |
+| ------- | ------------------------------------------------ |
+| VIEWER  | Read-only                                        |
+| ANALYST | Read + Create + Update                           |
+| ADMIN   | Full access (including delete & user management) |
 
 ---
 
-# NOTES
+# ⚠️ ERROR HANDLING
 
-- Dates must follow format: `yyyy-mm-dd`
-- Role and type values are case-insensitive
-- Filtering parameters are optional
-- Partial updates are supported for transactions
-- System uses in-memory storage (data resets on restart)
-- Tested using Postman
+| Status Code | Scenario                                             |
+| ----------- | ---------------------------------------------------- |
+| 400         | Invalid input (role, type, date, duplicate username) |
+| 403         | Unauthorized action / inactive user                  |
+| 404         | Resource not found                                   |
+| 200         | Successful operation                                 |
 
 ---
 
-# SUMMARY
+# 🧠 NOTES
 
-This API supports:
+- User IDs follow format:
 
-- User management with role-based access control
-- Secure authentication (hashed passwords using SHA-256)
-- Transaction CRUD with filtering
-- Financial analytics and trends
+  ```
+  user-xxxxxx
+  ```
+
+- Transaction IDs follow format:
+
+  ```
+  transac-xxxxxx
+  ```
+
+- Dates must follow:
+
+  ```
+  yyyy-mm-dd
+  ```
+
+- Role and transaction type are case-insensitive
+- Partial updates are supported
+- Data is persisted using **SQLite database**
+- Passwords are hashed using **SHA-256**
+- APIs tested using Postman
+
+---
+
+# 🚀 SUMMARY
+
+This API provides:
+
+- Role-based user management (RBAC)
+- Secure authentication with hashed passwords
+- Transaction management with filtering
+- Financial analytics (income, expense, trends)
+- Persistent storage using SQLite
 
 ---
